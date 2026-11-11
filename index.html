@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#123456">
+<meta name="description" content="Recall, a focused flashcard and spaced-repetition study app.">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Recall">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="manifest" href="manifest.json">
+<title>Recall</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--deep:#123456;--steel:#4682B4;--denim:#79BAEC;--berry:#0041C2;--s1:#1a4472;--s2:#1f4f82;--n:#79BAEC;--l:#ff8a80;--d:#4ade80}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{background:#000;font-family:'Montserrat',system-ui,sans-serif;color:#fff;display:flex;justify-content:center}
+button,input,select,textarea{font:inherit;color:inherit}
+button{background:none;border:0;cursor:pointer}
+:focus-visible{outline:2px solid var(--denim);outline-offset:2px}
+.app{width:100%;max-width:430px;height:100%;background:var(--deep);display:flex;flex-direction:column;position:relative;padding-top:env(safe-area-inset-top,0)}
+@media(min-width:500px){body{align-items:center}.app{height:min(860px,96vh);border-radius:28px;border:1px solid #1b2a3c;overflow:hidden}}
+.topbar{display:flex;align-items:center;gap:10px;padding:14px 18px 6px;flex:none}
+.logo{width:40px;height:40px;border-radius:12px;background:var(--berry);display:grid;place-items:center}
+.brand{font-weight:700;font-size:20px}
+.pill{margin-left:auto;font-size:12px;font-weight:600;color:#22c55e;background:rgba(34,197,94,.14);padding:6px 12px;border-radius:99px}
+.ib{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;flex:none}
+.ib:active{background:var(--s1)}
+#v{flex:1;min-height:0;display:flex;flex-direction:column}
+.pad{flex:1;overflow-y:auto;padding:8px 18px 18px;display:flex;flex-direction:column;gap:12px}
+.card{background:var(--s1);border-radius:18px;padding:16px}
+h1{font-size:26px;font-weight:700;line-height:1.15;margin-bottom:6px}
+h2{font-size:17px;font-weight:700}
+.mu{color:var(--denim);font-size:14px;font-weight:500;line-height:1.45}
+.pb{height:6px;border-radius:9px;background:rgba(255,255,255,.14);margin-top:12px;overflow:hidden}.pb i{display:block;height:100%;background:var(--denim)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.stat{background:var(--s2);border-radius:16px;padding:16px}.stat b{display:block;font-size:30px;line-height:1.1;margin-bottom:12px}.stat span{font-size:14px;color:var(--denim);font-weight:500}
+.btn{background:var(--s2);border-radius:12px;padding:10px 14px;font-size:14px;font-weight:600}
+.btn.p{background:var(--berry)}.btn.r{background:#7a2230}
+.big{width:100%;background:var(--berry);border-radius:14px;padding:16px;font-size:20px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:10px}
+.big:active,.btn.p:active{background:#0036a3}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.dw{flex:1;min-height:0;padding:12px 18px 10px;display:flex;flex-direction:column}
+.dh{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
+.lg{font-size:12px;font-weight:600;display:flex;gap:10px}
+.n{color:var(--n)}.l{color:var(--l)}.d{color:var(--d)}.z{opacity:.35}
+.dl{flex:1;min-height:0;overflow-y:auto;background:var(--s1);border-radius:18px;padding:6px;scrollbar-width:thin;scrollbar-color:var(--steel) transparent}
+.deck{display:flex;align-items:center;gap:8px;padding:13px 10px;border-radius:12px;cursor:pointer;border-bottom:1px solid rgba(121,186,236,.12)}
+.deck:active{background:var(--s2)}
+.chev{width:22px;height:22px;flex:none;color:var(--denim);display:grid;place-items:center;transition:transform .2s}.chev.o{transform:rotate(90deg)}
+.name{flex:1;font-size:15px;font-weight:600;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.counts{display:flex;gap:12px;font-size:14px;font-weight:700;flex:none}
+.empty{padding:28px 16px;text-align:center}.empty p{margin-bottom:14px}
+input,select,textarea{width:100%;background:var(--deep);border:1px solid var(--steel);border-radius:12px;padding:11px 12px;font-size:15px}
+textarea{min-height:70px;resize:vertical}
+label{display:block;font-size:12px;font-weight:600;color:var(--denim);margin:10px 0 4px}
+.cr{display:flex;gap:10px;align-items:center;padding:12px;border-bottom:1px solid rgba(121,186,236,.12);cursor:pointer}
+.cr div{flex:1;min-width:0}.cr b{display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.cr small{color:var(--denim);font-size:12px}
+.nav{flex:none;display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid rgba(121,186,236,.18);padding:8px 10px calc(8px + env(safe-area-inset-bottom,0))}
+.nav button{display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 0;color:var(--steel);font-size:11px;font-weight:600}
+.nav [aria-current=page]{color:#fff}.nav [aria-current=page] svg{color:var(--denim)}
+.st .nav,.st .topbar{display:none}
+.bars{display:flex;align-items:flex-end;gap:4px;height:110px;margin-top:10px}
+.bars div{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%;font-size:9px;color:var(--denim);gap:3px}
+.bars i{width:100%;background:var(--steel);border-radius:4px 4px 0 0;min-height:2px}
+.tr{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid rgba(121,186,236,.12);font-size:14px}.tr b{font-weight:700}
+/* study */
+.sh{display:flex;align-items:center;gap:12px;padding:16px 18px 6px}
+.sb{flex:1;height:8px;border-radius:9px;background:rgba(255,255,255,.14);overflow:hidden}.sb i{display:block;height:100%;background:var(--denim);transition:width .3s}
+.cw{flex:1;padding:14px 18px;perspective:1200px;min-height:0}
+.c3{position:relative;width:100%;height:100%;transition:transform .5s;transform-style:preserve-3d}.c3.flip{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;background:var(--s1);border-radius:22px;padding:22px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:12px;overflow-y:auto;font-size:22px;font-weight:600;line-height:1.35;white-space:pre-wrap}
+.face.bk{transform:rotateY(180deg);background:var(--s2)}
+.face img{max-width:100%;max-height:160px;border-radius:12px}
+.face small{font-size:14px;font-weight:500;color:var(--denim)}
+.ra{padding:6px 18px calc(18px + env(safe-area-inset-bottom,0));display:grid;grid-template-columns:repeat(4,1fr);gap:8px;flex:none}
+.ra button{border-radius:14px;padding:12px 4px;font-weight:700;font-size:15px;display:flex;flex-direction:column;gap:3px}.ra small{font-size:11px;font-weight:500;opacity:.85}
+.ra .sa{grid-column:1/-1;background:var(--berry);font-size:18px;padding:16px;flex-direction:row;justify-content:center}
+/* modal */
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:flex-end;justify-content:center;z-index:9}
+.sheet{width:100%;max-width:430px;max-height:92vh;overflow-y:auto;background:var(--deep);border:1px solid var(--steel);border-radius:22px 22px 0 0;padding:18px}
+.sheet h2{margin-bottom:6px}
+</style>
+</head>
+<body>
+<main class="app" id="app">
+<header class="topbar"><div class="logo"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.2 5.3L20 9l-4.3 3.9L17 19l-5-3-5 3 1.3-6.1L4 9l5.8-.7z"/></svg></div><span class="brand">Recall</span><span class="pill" id="pill"></span><button class="ib" data-a="set" aria-label="Settings"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button></header>
+<div id="v"></div>
+<nav class="nav">
+<button data-a="go" data-t="home"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg>Home</button>
+<button data-a="go" data-t="stats"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-8M22 20H2"/></svg>Stats</button>
+<button data-a="go" data-t="decks"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="14" height="13" rx="2"/><path d="M7 7V5a2 2 0 012-2h10a2 2 0 012 2v10a2 2 0 01-2 2h-2"/></svg>Decks</button>
+<button data-a="go" data-t="profile"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg>Profile</button>
+</nav>
+</main>
+<div id="m"></div>
+<input type="file" id="fi" hidden>
+<script>
+const $=s=>document.querySelector(s),D=864e5,M=6e4;
+// ---------- FSRS-5 core (default parameters) ----------
+const W=[.40255,1.18385,3.173,15.69105,7.1949,.5345,1.4604,.0046,1.54575,.1192,1.01925,1.9395,.11,.29605,2.2698,.2315,2.9898,.51655,.6621],F=19/81;
+const cl=(x,a,b)=>Math.min(b,Math.max(a,x)),R=(t,s)=>Math.pow(1+F*t/s,-.5),IV=(s,r)=>Math.max(1,Math.round(s/F*(Math.pow(r,-2)-1)));
+const d0=g=>W[4]-Math.exp(W[5]*(g-1))+1,nd=(d,g)=>cl(W[7]*d0(4)+(1-W[7])*(d-W[6]*(g-3)*(10-d)/9),1,10);
+const sr=(d,s,r,g)=>s*(1+Math.exp(W[8])*(11-d)*Math.pow(s,-W[9])*(Math.exp((1-r)*W[10])-1)*(g==2?W[15]:1)*(g==4?W[16]:1));
+const sf=(d,s,r)=>Math.min(s,W[11]*Math.pow(d,-W[12])*(Math.pow(s+1,W[13])-1)*Math.exp((1-r)*W[14]));
+// states: 0 new, 1 learning, 2 review, 3 relearning
+function sched(c,g,now){const f={...c.f},r0=S.set.ret,el=Math.max(0,(now-f.last)/D);f.reps++;f.last=now;let st=f.st;
+ const out=()=>{f.st=2;f.step=0;f.iv=IV(f.s,r0);f.due=now+f.iv*D;return f};
+ if(st==0){f.s=W[g-1];f.d=cl(d0(g),1,10);f.st=st=1;f.step=0;if(g==4)return out()}
+ else if(st==2){const r=R(el,f.s);f.d=nd(c.f.d,g);
+  if(g==1){f.s=Math.max(.1,sf(c.f.d,c.f.s,r));f.lapses++;f.st=3;f.step=0;f.due=now+10*M;return f}
+  const ss=[2,3,4].map(x=>sr(c.f.d,c.f.s,r,x)),iv=ss.map(s=>IV(s,r0));
+  iv[0]=Math.min(iv[0],iv[1]);iv[1]=Math.max(iv[1],iv[0]+1);iv[2]=Math.max(iv[2],iv[1]+1);
+  f.s=ss[g-2];f.iv=iv[g-2];f.due=now+f.iv*D;return f}
+ const steps=st==3?[10]:[1,10];
+ if(g==1)f.step=0;else if(g==3)f.step++;else if(g==4)f.step=steps.length;
+ if(f.step>=steps.length)return out();
+ f.due=now+steps[f.step]*M;return f}
+const lbl=ms=>ms<36e5?Math.max(1,Math.round(ms/M))+'m':ms<D?Math.round(ms/36e5)+'h':ms<30*D?Math.round(ms/D)+'d':ms<365*D?(ms/D/30).toFixed(1)+'mo':(ms/D/365).toFixed(1)+'y';
+// ---------- data ----------
+let S=JSON.parse(localStorage.getItem('recall.v1')||'null')||{decks:[],cards:[],logs:[],set:{ret:.9,np:20,mx:200}};
+const save=()=>{try{localStorage.setItem('recall.v1',JSON.stringify(S))}catch(e){alert('Storage is full. Export a backup and remove images or old cards.')}};
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const deck=id=>S.decks.find(d=>d.id==id),card=id=>S.cards.find(c=>c.id==id);
+const sod=()=>new Date().setHours(0,0,0,0),eod=()=>new Date().setHours(23,59,59,999);
+const kids=id=>S.decks.filter(d=>d.p===id),tree=id=>[id,...kids(id).flatMap(k=>tree(k.id))];
+const mk=(deckId,o={})=>({id:uid(),deck:deckId,front:'',back:'',extra:'',hint:'',tags:[],img:'',cr:Date.now(),md:Date.now(),...o,f:{st:0,s:0,d:0,due:Date.now(),step:0,last:0,reps:0,lapses:0}});
+const newDone=ids=>S.logs.filter(x=>x.st==0&&x.t>=sod()&&ids.has(x.deck)).length;
+function cnt(id){const ids=new Set(tree(id)),now=Date.now(),e=eod();let n=0,l=0,u=0;
+ S.cards.forEach(c=>{if(!ids.has(c.deck))return;const f=c.f;if(f.st==0)n++;else if(f.st==2){if(f.due<=e)u++}else if(f.due<=now+20*M)l++});
+ return[Math.min(n,Math.max(0,(deck(id).np??S.set.np)-newDone(ids))),l,u]}
+const tot=()=>S.decks.filter(d=>!d.p).reduce((a,d)=>{const x=cnt(d.id);return a.map((v,i)=>v+x[i])},[0,0,0]);
+const dayKey=t=>new Date(t).toLocaleDateString('en-CA');
+function streak(){const s=new Set(S.logs.map(x=>dayKey(x.t)));let n=0,t=Date.now();if(!s.has(dayKey(t)))t-=D;while(s.has(dayKey(t))){n++;t-=D}return n}
+// ---------- csv / files ----------
+function parseCSV(t){const r=[];let row=[],f='',q=0;for(let i=0;i<t.length;i++){const c=t[i];if(q){if(c=='"'){if(t[i+1]=='"'){f+='"';i++}else q=0}else f+=c}else if(c=='"')q=1;else if(c==','||c=='\t'){row.push(f);f=''}else if(c=='\n'||c=='\r'){if(c=='\r'&&t[i+1]=='\n')i++;row.push(f);r.push(row);row=[];f=''}else f+=c}if(f||row.length){row.push(f);r.push(row)}return r.filter(x=>x.join('').trim())}
+const toCSV=rows=>rows.map(r=>r.map(x=>'"'+String(x??'').replace(/"/g,'""')+'"').join(',')).join('\n');
+function dl(name,text,type){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1e3)}
+function pick(cb,accept){const i=$('#fi');i.accept=accept;i.value='';i.onchange=()=>{const f=i.files[0];if(f)cb(f)};i.click()}
+// ---------- views ----------
+let V={t:'home',id:null,o:new Set(),sort:'name',q:'',tag:''},ST=null,tm=null;
+const CH='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>';
+const zc=(v,c)=>`<span class="${c}${v?'':' z'}">${v}</span>`;
+const sib=p=>S.decks.filter(d=>p?d.p===p:!d.p).sort(V.sort=='due'?(a,b)=>{const x=cnt(a.id),y=cnt(b.id);return y[1]+y[2]-x[1]-x[2]}:(a,b)=>a.name.localeCompare(b.name));
+function row(d,dep){const[n,l,u]=cnt(d.id),k=sib(d.id),o=V.o.has(d.id);
+ return`<div class="deck" data-a="open" data-id="${d.id}" style="padding-left:${10+dep*16}px">${k.length&&!V.q?`<button class="chev ${o?'o':''}" data-a="tg" data-id="${d.id}" aria-label="Show subdecks">${CH}</button>`:'<i class="chev"></i>'}<span class="name">${esc(d.name)}</span><span class="counts">${zc(n,'n')}${zc(l,'l')}${zc(u,'d')}</span></div>`+(o&&!V.q?k.map(x=>row(x,dep+1)).join(''):'')}
+function deckList(){if(!S.decks.length)return`<div class="empty"><p class="mu">No decks yet. Create one to start adding cards.</p><div class="row" style="justify-content:center"><button class="btn p" data-a="nd">New deck</button><button class="btn" data-a="sample">Add sample deck</button></div></div>`;
+ const q=V.q.toLowerCase();return q?S.decks.filter(d=>d.name.toLowerCase().includes(q)).map(d=>row(d,0)).join('')||'<div class="empty mu">No decks match.</div>':sib(null).map(d=>row(d,0)).join('')}
+const legend='<div class="lg"><span class="n">New</span><span class="l">Learn</span><span class="d">Due</span></div>';
+const VIEWS={
+ home(){const[n,l,u]=tot(),done=S.logs.filter(x=>x.t>=sod()).length,left=n+l+u,h=new Date().getHours(),sk=streak(),qs=['Ready to sharpen your memory?','A little review today saves hours later.','Small sessions, strong memory.'];
+  return`<div style="padding:8px 18px 0;display:flex;flex-direction:column;gap:12px"><div class="card"><h1>Good ${h<12?'morning':h<18?'afternoon':'evening'}!</h1><p class="mu">${qs[new Date().getDate()%3]}</p><p class="mu" style="margin-top:8px">${done} reviewed today · ${sk}-day streak</p><div class="pb"><i style="width:${done+left?Math.round(100*done/(done+left)):0}%"></i></div></div>
+  <div class="g2"><div class="stat"><b>${l+u}</b><span>Due today</span></div><div class="stat"><b>${n}</b><span>New cards</span></div></div>
+  <button class="big" data-a="study">Start studying <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div>
+  <div class="dw"><div class="dh"><h2>Your decks</h2>${legend}</div><div class="dl" id="dl">${deckList()}</div></div>`},
+ decks(){return`<div class="pad"><div class="row"><input data-i="q" placeholder="Search decks" value="${esc(V.q)}" style="flex:1;min-width:140px"><select data-i="sort" style="width:auto"><option value="name"${V.sort=='name'?' selected':''}>A–Z</option><option value="due"${V.sort=='due'?' selected':''}>Most due</option></select></div><div class="row" style="justify-content:space-between"><button class="btn p" data-a="nd">New deck</button>${legend}</div><div class="dl" id="dl" style="flex:none">${deckList()}</div></div>`},
+ deck(){const d=deck(V.id);if(!d){V.t='home';return VIEWS.home()}const[n,l,u]=cnt(d.id),ids=new Set(tree(d.id)),all=S.cards.filter(c=>ids.has(c.deck)),tags=[...new Set(all.flatMap(c=>c.tags))].sort(),k=sib(d.id);
+  return`<div class="pad"><div class="row"><button class="ib" data-a="go" data-t="decks" aria-label="Back"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button><h1 style="margin:0;font-size:22px;flex:1">${esc(d.name)}</h1></div>
+  ${d.desc?`<p class="mu">${esc(d.desc)}</p>`:''}<div class="card row" style="justify-content:space-between"><span class="mu">${all.length} cards</span><span class="counts">${zc(n,'n')}${zc(l,'l')}${zc(u,'d')}</span></div>
+  <div class="row"><button class="btn p" data-a="study" data-id="${d.id}">Study</button><button class="btn" data-a="nc" data-id="${d.id}">Add card</button><button class="btn" data-a="nd" data-id="${d.id}">Subdeck</button><button class="btn" data-a="ed" data-id="${d.id}">Edit</button><button class="btn" data-a="dup" data-id="${d.id}">Duplicate</button><button class="btn" data-a="xd" data-id="${d.id}">Export CSV</button><button class="btn r" data-a="dd" data-id="${d.id}">Delete</button></div>
+  ${k.length?`<div class="dl" style="flex:none">${k.map(x=>row(x,0)).join('')}</div>`:''}
+  <div class="row"><input data-i="cq" placeholder="Search cards" value="${esc(V.q)}" style="flex:1;min-width:130px"><select data-i="tag" style="width:auto"><option value="">All tags</option>${tags.map(t=>`<option${V.tag==t?' selected':''}>${esc(t)}</option>`).join('')}</select></div>
+  <div class="dl" id="cl" style="flex:none">${cardList()}</div></div>`},
+ stats(){const L=S.logs,rv=L.filter(x=>x.st==2),bars=n=>{const a=[];for(let i=n-1;i>=0;i--){const t=Date.now()-i*D,c=L.filter(x=>dayKey(x.t)==dayKey(t)).length;a.push([new Date(t).getDate(),c])}const mx=Math.max(1,...a.map(x=>x[1]));return`<div class="bars">${a.map(x=>`<div>${n<=7?x[1]:''}<i style="height:${Math.round(86*x[1]/mx)}%"></i>${n<=7?x[0]:''}</div>`).join('')}</div>`},
+  r=(a,b)=>`<div class="tr"><span>${a}</span><b>${b}</b></div>`,now=Date.now(),due=S.cards.filter(c=>c.f.st==2?c.f.due<=eod():c.f.st&&c.f.due<=now+20*M).length,
+  ret=rv.length?Math.round(100*rv.filter(x=>x.g>1).length/rv.length)+'%':'–',avg=L.length?(L.reduce((a,x)=>a+x.ms,0)/L.length/1e3).toFixed(1)+'s':'–';
+  return`<div class="pad"><div class="g2"><div class="stat"><b>${S.logs.filter(x=>x.t>=sod()).length}</b><span>Reviews today</span></div><div class="stat"><b>${streak()}</b><span>Day streak</span></div></div>
+  <div class="card"><h2>Last 7 days</h2>${bars(7)}</div><div class="card"><h2>Last 30 days</h2>${bars(30)}</div>
+  <div class="card">${r('Cards studied',new Set(L.map(x=>x.c)).size)}${r('Cards learned',S.cards.filter(c=>c.f.st==2).length)}${r('Cards due',due)}${r('Total reviews',L.length)}${r('Reviews, last 7 days',L.filter(x=>x.t>now-7*D).length)}${r('Reviews, last 30 days',L.filter(x=>x.t>now-30*D).length)}${r('Estimated retention',ret)}${r('Average time per card',avg)}</div>
+  <div class="card"><h2 style="margin-bottom:6px">By deck</h2>${S.decks.map(d=>{const ids=new Set(tree(d.id)),x=L.filter(y=>ids.has(y.deck)),ok=x.filter(y=>y.g>1).length;return r(esc(d.name),x.length?`${x.length} · ${Math.round(100*ok/x.length)}% correct`:'–')}).join('')||'<p class="mu">No decks yet.</p>'}</div></div>`},
+ profile(){return`<div class="pad"><div class="card"><h2>Your collection</h2><div class="tr"><span>Decks</span><b>${S.decks.length}</b></div><div class="tr"><span>Cards</span><b>${S.cards.length}</b></div><div class="tr"><span>Reviews</span><b>${S.logs.length}</b></div><div class="tr"><span>Streak</span><b>${streak()} days</b></div></div>
+  <div class="card"><h2 style="margin-bottom:10px">Backup and import</h2><div class="row"><button class="btn p" data-a="bk">Export JSON backup</button><button class="btn" data-a="rs">Restore backup</button><button class="btn" data-a="ic">Import CSV</button><button class="btn" data-a="xa">Export all cards CSV</button></div><p class="mu" style="margin-top:10px">CSV columns: front, back, tags (optional). Data is stored on this device.</p></div></div>`}
+};
+function cardList(){const d=deck(V.id),ids=new Set(tree(d.id));let cs=S.cards.filter(c=>ids.has(c.deck));const q=V.q.toLowerCase();
+ if(q)cs=cs.filter(c=>(c.front+c.back+c.extra).toLowerCase().includes(q));if(V.tag)cs=cs.filter(c=>c.tags.includes(V.tag));
+ return cs.map(c=>`<div class="cr" data-a="ec" data-id="${c.id}"><div><b>${esc(c.front)||'(image card)'}</b><small>${esc(c.back).slice(0,60)}${c.tags.length?' · '+esc(c.tags.join(', ')):''}</small></div><small>${c.f.st?lbl(Math.max(0,c.f.due-Date.now())):'new'}</small></div>`).join('')||'<div class="empty mu">No cards.</div>'}
+function render(){const t=V.t;$('#app').classList.toggle('st',t=='study');document.querySelectorAll('.nav button').forEach(b=>b.setAttribute('aria-current',b.dataset.t==(t=='deck'?'decks':t)?'page':'false'));
+ $('#pill').textContent={home:'Study dashboard',stats:'Statistics',decks:'Decks',profile:'Profile',deck:'Deck'}[t]||'';$('#v').innerHTML=t=='study'?studyV():VIEWS[t]()}
+const go=(t,id)=>{V={...V,t,id,q:'',tag:''};render()};
+// ---------- study ----------
+function startStudy(id){const ids=new Set(id?tree(id):S.decks.map(d=>d.id)),now=Date.now(),e=eod(),np=id?(deck(id).np??S.set.np):S.set.np,cs=S.cards.filter(c=>ids.has(c.deck)),by=(a,b)=>a.f.due-b.f.due;
+ const q=[...cs.filter(c=>c.f.st%2&&c.f.due<=now+20*M).sort(by),...cs.filter(c=>c.f.st==2&&c.f.due<=e).sort(by).slice(0,S.set.mx),...cs.filter(c=>c.f.st==0).slice(0,Math.max(0,np-newDone(ids)))].map(c=>c.id);
+ ST={q,shown:false,t0:Date.now(),cs:Date.now(),p:0,done:0,back:V.t,bid:V.id};V.t='study';render();clearInterval(tm);tm=setInterval(tick,500)}
+const tick=()=>{const e=$('#tm');if(e&&ST){const s=Math.floor(((ST.p||Date.now())-ST.t0)/1e3);e.textContent=Math.floor(s/60)+':'+String(s%60).padStart(2,'0')}};
+function studyV(){const c=ST.q.length?card(ST.q[0]):null;
+ if(!c)return`<div class="pad" style="justify-content:center;text-align:center"><h1>${ST.done?'Session complete':'Nothing due'}</h1><p class="mu">${ST.done?`You reviewed ${ST.done} card${ST.done>1?'s':''} in ${$('#tm')?.textContent||'this session'}.`:'There are no cards to study right now.'}</p><button class="big" data-a="exit">Back</button></div>`;
+ const pr=Math.round(100*ST.done/(ST.done+ST.q.length));
+ return`<div class="sh"><button class="ib" data-a="exit" aria-label="End session"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button><div class="sb"><i style="width:${pr}%"></i></div><span id="tm" class="mu">0:00</span><button class="ib" data-a="pause" aria-label="Pause">${ST.p?'▶':'❚❚'}</button></div>
+ <div class="cw"><div class="c3${ST.shown?' flip':''}"><div class="face">${c.img?`<img src="${c.img}" alt="">`:''}${esc(c.front)}${c.hint?`<small id="ht" data-a="hint" style="cursor:pointer" data-h="${esc(c.hint)}">Show hint</small>`:''}</div><div class="face bk">${esc(c.back)}${c.extra?`<small>${esc(c.extra)}</small>`:''}${c.tags.length?`<small>${esc(c.tags.join(' · '))}</small>`:''}</div></div></div>
+ <div class="ra" id="ra">${ST.shown?rates(c):'<button class="sa" data-a="flip">Show answer</button>'}</div>${ST.p?'<div class="ov" style="align-items:center"><button class="big" style="width:220px" data-a="pause">Resume</button></div>':''}`}
+function rates(c){const now=Date.now(),cs=['#c43d45','#4682B4','#0041C2','#1f9d57'];return['Again','Hard','Good','Easy'].map((n,i)=>`<button style="background:${cs[i]}" data-a="rate" data-g="${i+1}">${n}<small>${lbl(sched(c,i+1,now).due-now)}</small></button>`).join('')}
+function flip(){if(!ST||ST.shown||ST.p)return;ST.shown=true;$('.c3').classList.add('flip');$('#ra').innerHTML=rates(card(ST.q[0]))}
+function rate(g){if(!ST||!ST.shown||ST.p)return;const c=card(ST.q[0]),now=Date.now(),nf=sched(c,g,now);S.logs.push({c:c.id,deck:c.deck,t:now,g,st:c.f.st,ms:Math.min(now-ST.cs,6e4)});c.f=nf;save();ST.q.shift();ST.done++;
+ if(nf.st%2&&nf.due<=now+20*M)ST.q.splice(Math.min(2,ST.q.length),0,c.id);ST.shown=false;ST.cs=Date.now();render();tick()}
+function pause(){if(!ST)return;if(ST.p){const d=Date.now()-ST.p;ST.t0+=d;ST.cs+=d;ST.p=0}else ST.p=Date.now();render();tick()}
+function exit(){clearInterval(tm);const b=ST.back,i=ST.bid;ST=null;V.t=b;V.id=i;render()}
+document.addEventListener('keydown',e=>{if(V.t!='study'||!ST||$('#m').innerHTML||e.target.matches('input,textarea'))return;if(e.key==' '||e.key=='Enter'){e.preventDefault();flip()}else if('1234'.includes(e.key)&&e.key)rate(+e.key);else if(e.key=='p')pause();else if(e.key=='Escape')exit()});
+// ---------- modals ----------
+const modal=h=>{$('#m').innerHTML=`<div class="ov" data-a="cm"><div class="sheet">${h}</div></div>`;const i=$('#m input,#m textarea');if(i&&innerWidth>500)i.focus()},cm=()=>$('#m').innerHTML='';
+const deckOpts=(sel,skip)=>`<option value="">(none)</option>`+S.decks.filter(d=>!skip||!tree(skip).includes(d.id)).map(d=>`<option value="${d.id}"${d.id==sel?' selected':''}>${esc(d.name)}</option>`).join('');
+const btns=(extra='')=>`<div class="row" style="margin-top:16px;justify-content:flex-end">${extra}<button type="button" class="btn" data-a="cm">Cancel</button><button class="btn p">Save</button></div>`;
+function deckForm(id,parent){const d=id?deck(id):{};modal(`<form data-f="deck" data-id="${id||''}"><h2>${id?'Edit deck':parent?'New subdeck':'New deck'}</h2><label>Name</label><input name="name" required value="${esc(d.name)}"><label>Description</label><textarea name="desc">${esc(d.desc)}</textarea><label>Parent deck</label><select name="p">${(()=>{const p=id?d.p:parent;return`<option value="">(none)</option>`+S.decks.filter(x=>!id||!tree(id).includes(x.id)).map(x=>`<option value="${x.id}"${x.id==p?' selected':''}>${esc(x.name)}</option>`).join('')})()}</select><label>New cards per day (blank = default ${S.set.np})</label><input name="np" type="number" min="0" value="${d.np??''}">${btns()}</form>`)}
+function cardForm(id,deckId){const c=id?card(id):{};ST_img=c.img||'';modal(`<form data-f="card" data-id="${id||''}"><h2>${id?'Edit card':'New card'}</h2><label>Deck</label><select name="deck">${S.decks.map(d=>`<option value="${d.id}"${d.id==(c.deck||deckId)?' selected':''}>${esc(d.name)}</option>`).join('')}</select><label>Front (question)</label><textarea name="front" data-pv>${esc(c.front)}</textarea><label>Back (answer)</label><textarea name="back" data-pv>${esc(c.back)}</textarea><label>Extra explanation</label><textarea name="extra">${esc(c.extra)}</textarea><label>Hint</label><input name="hint" value="${esc(c.hint)}"><label>Tags (comma separated)</label><input name="tags" value="${esc((c.tags||[]).join(', '))}"><label>Image</label><div class="row"><button type="button" class="btn" data-a="img">Choose image</button><button type="button" class="btn" data-a="noimg">Remove</button><span class="mu" id="is">${c.img?'Image attached':''}</span></div>${id?'':'<label style="display:flex;gap:8px;align-items:center;margin-top:12px"><input type="checkbox" name="rev" style="width:auto"> Also create reversed card</label>'}<label>Preview</label><div class="card mu" id="pv" style="white-space:pre-wrap"></div>${btns(id?`<button type="button" class="btn" data-a="dc" data-id="${id}">Duplicate</button><button type="button" class="btn r" data-a="dx" data-id="${id}">Delete</button>`:'')}</form>`);pv()}
+let ST_img='';const pv=()=>{const f=$('form[data-f=card]');if(f)$('#pv').textContent='Q: '+f.front.value+'\nA: '+f.back.value};
+function setForm(){modal(`<form data-f="set"><h2>Settings</h2><label>Desired retention (0.70–0.99)</label><input name="ret" type="number" step="0.01" min="0.7" max="0.99" value="${S.set.ret}"><label>New cards per day</label><input name="np" type="number" min="0" value="${S.set.np}"><label>Maximum reviews per day</label><input name="mx" type="number" min="1" value="${S.set.mx}">${btns()}</form>`)}
+document.addEventListener('submit',e=>{e.preventDefault();const f=e.target,v=Object.fromEntries(new FormData(f)),t=f.dataset.f,id=f.dataset.id;
+ if(t=='deck'){const o={name:v.name.trim(),desc:v.desc.trim(),p:v.p||undefined,np:v.np===''?undefined:+v.np};if(id)Object.assign(deck(id),o);else{const d={id:uid(),...o};S.decks.push(d);if(o.p)V.o.add(o.p)}}
+ if(t=='card'){const o={deck:v.deck,front:v.front,back:v.back,extra:v.extra,hint:v.hint,tags:v.tags.split(',').map(x=>x.trim()).filter(Boolean),img:ST_img,md:Date.now()};
+  if(id)Object.assign(card(id),o);else{S.cards.push(mk(v.deck,o));if(v.rev)S.cards.push(mk(v.deck,{...o,front:v.back,back:v.front,img:''}))}}
+ if(t=='set')S.set={ret:cl(+v.ret||.9,.7,.99),np:+v.np||0,mx:+v.mx||200};
+ if(t=='imp'){const rows=window._rows;rows.forEach(r=>S.cards.push(mk(v.deck,{front:r[0]||'',back:r[1]||'',tags:(r[2]||'').split(/[,;]/).map(x=>x.trim()).filter(Boolean)})));alert(rows.length+' cards imported.')}
+ save();cm();render()});
+document.addEventListener('input',e=>{const t=e.target,i=t.dataset.i;if(t.matches('[data-pv]'))pv();if(i=='q'){V.q=t.value;$('#dl').innerHTML=deckList()}if(i=='cq'){V.q=t.value;$('#cl').innerHTML=cardList()}});
+document.addEventListener('change',e=>{const t=e.target,i=t.dataset.i;if(i=='sort'){V.sort=t.value;$('#dl').innerHTML=deckList()}if(i=='tag'){V.tag=t.value;$('#cl').innerHTML=cardList()}});
+// ---------- actions ----------
+function dup(id,p){const d=deck(id),n={...d,id:uid(),name:p?d.name:d.name+' (copy)',p:p||d.p};S.decks.push(n);S.cards.filter(c=>c.deck==id).forEach(c=>S.cards.push(mk(n.id,{front:c.front,back:c.back,extra:c.extra,hint:c.hint,tags:[...c.tags],img:c.img})));kids(id).forEach(k=>dup(k.id,n.id));return n}
+const cardsCSV=ids=>toCSV([['front','back','tags'],...S.cards.filter(c=>ids.has(c.deck)).map(c=>[c.front,c.back,c.tags.join(', ')])]);
+const A={
+ go:b=>go(b.dataset.t),tg:b=>{const i=b.dataset.id;V.o.has(i)?V.o.delete(i):V.o.add(i);render()},open:b=>go('deck',b.dataset.id),set:setForm,
+ nd:b=>deckForm(null,b.dataset.id),ed:b=>deckForm(b.dataset.id),nc:b=>S.decks.length?cardForm(null,b.dataset.id):alert('Create a deck first.'),
+ ec:b=>cardForm(b.dataset.id),study:b=>startStudy(b.dataset.id),flip,pause,exit,hint:b=>b.textContent=b.dataset.h,rate:b=>rate(+b.dataset.g),cm:(b,e)=>{if(e.target==b||b.tagName=='BUTTON')cm()},
+ sample(){const d={id:uid(),name:'Sample: World capitals'};S.decks.push(d);[['Capital of France?','Paris'],['Capital of Japan?','Tokyo'],['Capital of Australia?','Canberra','Not Sydney']].forEach(c=>S.cards.push(mk(d.id,{front:c[0],back:c[1],extra:c[2]||''})));save();render()},
+ dup:b=>{dup(b.dataset.id);save();go('decks')},xd:b=>dl(deck(b.dataset.id).name+'.csv',cardsCSV(new Set(tree(b.dataset.id))),'text/csv'),xa:()=>dl('recall-cards.csv',cardsCSV(new Set(S.decks.map(d=>d.id))),'text/csv'),
+ dd(b){const id=b.dataset.id;if(!confirm('Delete this deck, its subdecks and all their cards?'))return;const ids=new Set(tree(id));S.decks=S.decks.filter(d=>!ids.has(d.id));S.cards=S.cards.filter(c=>!ids.has(c.deck));save();go('decks')},
+ dc(b){const c=card(b.dataset.id);S.cards.push(mk(c.deck,{front:c.front,back:c.back,extra:c.extra,hint:c.hint,tags:[...c.tags],img:c.img}));save();cm();render()},
+ dx(b){if(confirm('Delete this card?')){S.cards=S.cards.filter(c=>c.id!=b.dataset.id);save();cm();render()}},
+ noimg(){ST_img='';$('#is').textContent=''},
+ img(){pick(f=>{const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const k=Math.min(1,480/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=im.width*k;c.height=im.height*k;c.getContext('2d').drawImage(im,0,0,c.width,c.height);ST_img=c.toDataURL('image/jpeg',.7);$('#is').textContent='Image attached'};im.src=r.result};r.readAsDataURL(f)},'image/*')},
+ bk:()=>dl('recall-backup-'+dayKey(Date.now())+'.json',JSON.stringify(S),'application/json'),
+ rs:()=>pick(f=>f.text().then(t=>{try{const j=JSON.parse(t);if(!j.decks||!j.cards)throw 0;if(!confirm('Replace all current data with this backup?'))return;S={logs:[],set:S.set,...j};save();go('home')}catch(x){alert('This file is not a valid Recall backup.')}}),'.json'),
+ ic:()=>{if(!S.decks.length)return alert('Create a deck first.');pick(f=>f.text().then(t=>{let r=parseCSV(t);if(r.length&&/^front|question$/i.test(r[0][0].trim()))r.shift();if(!r.length)return alert('No rows found.');window._rows=r;modal(`<form data-f="imp"><h2>Import ${r.length} cards</h2><label>Into deck</label><select name="deck">${S.decks.map(d=>`<option value="${d.id}">${esc(d.name)}</option>`).join('')}</select>${btns()}</form>`)}),'.csv,.tsv,.txt')}
+};
+document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(b&&A[b.dataset.a]){if(b.dataset.a!='cm')e.stopPropagation();A[b.dataset.a](b,e)}});
+render();
+if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('sw.js');
+</script>
+</body>
+</html>
